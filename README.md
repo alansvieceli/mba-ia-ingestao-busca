@@ -8,7 +8,7 @@ O sistema permite:
 * Armazenar embeddings vetoriais no banco de dados
 * Realizar perguntas via CLI
 * Obter respostas **exclusivamente com base no conteúdo do PDF**
-* Evitar qualquer tipo de alucinação ou conhecimento externo
+* Evitar qualquer tipo de alucinação ou uso de conhecimento externo
 
 ---
 
@@ -48,10 +48,13 @@ O sistema permite:
 ├── requirements.txt
 ├── .env.example
 ├── src/
-│   ├── ingest.py      # Ingestão do PDF
-│   ├── search.py      # Busca semântica
-│   ├── chat.py        # CLI interativo
-├── document.pdf       # PDF para ingestão (padrão)
+│   ├── ingest.py          # Ingestão do PDF
+│   ├── search.py          # Busca semântica + montagem do prompt
+│   ├── chat.py            # CLI interativo
+│   ├── prompts/
+│   │   ├── __init__.py
+│   │   └── p_search.py    # Template de prompt obrigatório
+├── document.pdf           # PDF para ingestão (padrão)
 └── README.md
 ```
 
@@ -185,8 +188,31 @@ python src/ingest.py
 Esse passo:
 
 * Lê o PDF configurado em `PDF_PATH`
+* Divide o conteúdo em **chunks de 1000 caracteres com overlap de 150**
 * Gera embeddings para cada chunk
 * Armazena os vetores no banco PostgreSQL (pgvector)
+
+---
+
+## 🔎 Busca semântica (sem LLM)
+
+Para testar apenas a busca e a montagem do prompt (sem chamar a LLM):
+
+```bash
+python src/search.py
+```
+
+Esse comando:
+
+* solicita uma pergunta no terminal
+* busca os **10 trechos mais relevantes** no banco vetorial
+* imprime o **prompt completo** que será enviado à LLM
+
+Esse passo é útil para:
+
+* validar o `CONTEXTO`
+* validar o template exigido pelo desafio
+* evitar custos desnecessários com LLM
 
 ---
 
@@ -200,7 +226,7 @@ python src/chat.py
 
 Exemplo:
 
-```
+```text
 Faça sua pergunta:
 PERGUNTA: Qual o faturamento da Empresa SuperTechIABrazil?
 RESPOSTA: O faturamento foi de 10 milhões de reais.
@@ -208,7 +234,7 @@ RESPOSTA: O faturamento foi de 10 milhões de reais.
 
 ### Perguntas fora do contexto
 
-```
+```text
 PERGUNTA: Quantos clientes temos em 2024?
 RESPOSTA: Não tenho informações necessárias para responder sua pergunta.
 ```
@@ -222,7 +248,7 @@ A LLM é instruída a:
 * Responder **somente** com base no contexto recuperado
 * Não usar conhecimento externo
 * Não gerar opiniões
-* Retornar uma mensagem padrão caso a resposta não esteja no PDF
+* Retornar uma mensagem padrão caso a resposta não esteja explicitamente no PDF
 
 ---
 
@@ -241,5 +267,5 @@ A LLM é instruída a:
 * [x] Banco com pgvector via Docker
 * [x] Suporte a OpenAI e Gemini via `ACTIVE_PROVIDER`
 * [x] Implementação da ingestão
-* [ ] Implementação da busca
+* [x] Implementação da busca semântica
 * [ ] Implementação do chat CLI
