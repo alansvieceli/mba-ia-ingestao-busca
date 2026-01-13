@@ -104,6 +104,10 @@ def search_prompt(question: str) -> str:
     # k=10 obrigatório pelo enunciado
     results = similarity_search_with_score(question, k=10)
 
+    # for i, (text, score) in enumerate(results, start=1):
+    #     print(f"\n--- CHUNK {i} | score={score:.4f} ---\n")
+    #     print(text[:300])
+
     contexto = "\n\n".join(text for text, _score in results)
 
     return build_prompt(contexto=contexto, pergunta=question)

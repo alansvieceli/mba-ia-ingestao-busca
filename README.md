@@ -1,6 +1,6 @@
 # Ingestão e Busca Semântica com LangChain e PostgreSQL (pgvector)
 
-Este projeto implementa um **sistema de busca semântica baseado em PDF**, utilizando **LangChain**, **PostgreSQL com pgvector** e **LLMs (OpenAI ou Gemini)**.
+Este projeto implementa um **sistema completo de busca semântica baseado em PDF**, utilizando **LangChain**, **PostgreSQL com pgvector** e **LLMs (OpenAI ou Gemini)**.
 
 O sistema permite:
 
@@ -25,8 +25,9 @@ O sistema permite:
 
 * Interface de linha de comando (CLI)
 * Vetorização da pergunta do usuário
-* Busca dos **10 trechos mais relevantes** no banco vetorial
-* Geração de resposta via LLM **somente com base no contexto recuperado**
+* Busca dos **10 trechos mais relevantes (k=10)** no banco vetorial
+* Montagem de prompt restritivo com base **exclusiva** no contexto recuperado
+* Geração de resposta via LLM
 * Perguntas fora do contexto retornam uma resposta padrão
 
 ---
@@ -50,7 +51,7 @@ O sistema permite:
 ├── src/
 │   ├── ingest.py          # Ingestão do PDF
 │   ├── search.py          # Busca semântica + montagem do prompt
-│   ├── chat.py            # CLI interativo
+│   ├── chat.py            # CLI interativo (end-to-end)
 │   ├── prompts/
 │   │   ├── __init__.py
 │   │   └── p_search.py    # Template de prompt obrigatório
@@ -216,7 +217,7 @@ Esse passo é útil para:
 
 ---
 
-## 💬 Chat via CLI
+## 💬 Chat via CLI (fluxo completo)
 
 Inicie o chat interativo:
 
@@ -268,4 +269,16 @@ A LLM é instruída a:
 * [x] Suporte a OpenAI e Gemini via `ACTIVE_PROVIDER`
 * [x] Implementação da ingestão
 * [x] Implementação da busca semântica
-* [ ] Implementação do chat CLI
+* [x] Implementação do chat CLI (end-to-end)
+
+---
+
+## 📌 Conclusão
+
+Este projeto implementa um fluxo completo de **RAG (Retrieval-Augmented Generation)** de forma explícita e auditável, atendendo rigorosamente aos requisitos do desafio:
+
+* ingestão controlada
+* armazenamento vetorial
+* busca top-k
+* prompt restritivo
+* ausência total de alucinações
