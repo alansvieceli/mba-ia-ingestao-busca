@@ -42,7 +42,6 @@ def load_settings() -> Settings:
     if not database_url:
         raise RuntimeError("DATABASE_URL não foi definido no arquivo .env")
 
-    # ✅ Mudança mínima: seleciona API key e embedding model de acordo com o provider
     if active_provider == "openai":
         api_key = os.getenv("OPENAI_API_KEY", "")
         embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL", "")

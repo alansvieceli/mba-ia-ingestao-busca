@@ -57,10 +57,10 @@ def main() -> None:
             print("Encerrando.")
             break
 
-        # 🔹 chama a busca + prompt
+        # chama a busca + prompt
         prompt = search_prompt(question)
 
-        # 🔹 envia o prompt para a LLM
+        # envia o prompt para a LLM
         response = llm.invoke(prompt)
 
         # LangChain retorna objeto de mensagem
@@ -71,4 +71,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

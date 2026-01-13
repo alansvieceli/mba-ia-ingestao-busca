@@ -197,6 +197,12 @@ Esse passo:
 
 ## 🔎 Busca semântica (sem LLM)
 
+> ⚠️ **Aviso**
+> Este passo **não é obrigatório** para o uso do sistema.
+> A busca semântica e a montagem do prompt **já são executadas automaticamente pelo `chat.py`** no fluxo completo.
+>
+> Este script existe **apenas para inspeção, depuração e validação do prompt**, permitindo visualizar exatamente o contexto que será enviado à LLM, **sem realizar chamadas à API**.
+
 Para testar apenas a busca e a montagem do prompt (sem chamar a LLM):
 
 ```bash
