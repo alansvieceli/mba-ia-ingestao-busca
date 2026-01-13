@@ -17,7 +17,7 @@ O sistema permite:
 ### Ingestão
 
 * Leitura de um arquivo PDF local
-* Divisão do texto em *chunks* de 1000 caracteres com overlap de 150
+* Divisão do texto em *chunks* de **1000 caracteres com overlap de 150**
 * Geração de embeddings
 * Persistência dos vetores no PostgreSQL (pgvector)
 
@@ -25,7 +25,7 @@ O sistema permite:
 
 * Interface de linha de comando (CLI)
 * Vetorização da pergunta do usuário
-* Busca dos 10 trechos mais relevantes no banco vetorial
+* Busca dos **10 trechos mais relevantes** no banco vetorial
 * Geração de resposta via LLM **somente com base no contexto recuperado**
 * Perguntas fora do contexto retornam uma resposta padrão
 
@@ -51,7 +51,7 @@ O sistema permite:
 │   ├── ingest.py      # Ingestão do PDF
 │   ├── search.py      # Busca semântica
 │   ├── chat.py        # CLI interativo
-├── document.pdf       # PDF para ingestão
+├── document.pdf       # PDF para ingestão (padrão)
 └── README.md
 ```
 
@@ -106,35 +106,71 @@ Crie o arquivo `.env` a partir do template:
 cp .env.example .env
 ```
 
-Exemplo de configuração:
+### Exemplo de configuração (OpenAI)
 
 ```env
-# === Qual provedor está ativo agora ===
+# === Provedor ativo ===
 ACTIVE_PROVIDER=openai
 # valores possíveis: openai | gemini
 
-# === OpenAI ou Gemini ===
-API_KEY=COLE_SUA_CHAVE_AQUI
-EMBEDDING_MODEL=text-embedding-3-small
+# === OpenAI ===
+OPENAI_API_KEY=COLE_SUA_CHAVE_AQUI
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 
-# === Postgres (Docker rodando na sua máquina) ===
+# === Gemini (opcional) ===
+GOOGLE_API_KEY=
+GOOGLE_EMBEDDING_MODEL=models/embedding-001
+
+# === Postgres (Docker rodando localmente) ===
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/postgres
 
-# === Nome da coleção/tabela vetorial no pgvector ===
+# === Nome da coleção/tabela vetorial ===
 PG_VECTOR_COLLECTION_NAME=documents
+
+# === Caminho do PDF a ser ingerido ===
+PDF_PATH=document.pdf
 ```
 
-### 🔄 Trocar entre OpenAI e Gemini
+---
 
-Para usar Gemini, basta alterar:
+### 🔄 Alternar entre OpenAI e Gemini
+
+O projeto suporta **apenas um provedor ativo por vez**, controlado pela variável `ACTIVE_PROVIDER`.
+
+#### Usando OpenAI
+
+```env
+ACTIVE_PROVIDER=openai
+OPENAI_API_KEY=sk-...
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+```
+
+#### Usando Gemini
 
 ```env
 ACTIVE_PROVIDER=gemini
-API_KEY=COLE_SUA_CHAVE_DO_GEMINI
-EMBEDDING_MODEL=models/embedding-001
+GOOGLE_API_KEY=...
+GOOGLE_EMBEDDING_MODEL=models/embedding-001
 ```
 
-Nenhuma alteração de código é necessária.
+> ⚠️ Não é necessário alterar o código para trocar o provedor — apenas o `.env`.
+
+---
+
+### 📄 Configuração do PDF
+
+O caminho do PDF é definido pela variável:
+
+```env
+PDF_PATH=document.pdf
+```
+
+* Pode ser um caminho relativo (resolvido a partir da raiz do projeto)
+* Ou um caminho absoluto:
+
+  ```env
+  PDF_PATH=/caminho/completo/para/arquivo.pdf
+  ```
 
 ---
 
@@ -148,9 +184,9 @@ python src/ingest.py
 
 Esse passo:
 
-* Lê o `document.pdf`
-* Gera embeddings
-* Armazena os vetores no banco
+* Lê o PDF configurado em `PDF_PATH`
+* Gera embeddings para cada chunk
+* Armazena os vetores no banco PostgreSQL (pgvector)
 
 ---
 
@@ -193,8 +229,9 @@ A LLM é instruída a:
 ## 🚨 Observações importantes
 
 * O arquivo `.env` **não deve ser commitado**
+* Nunca compartilhe suas API Keys
 * O custo de uso das APIs é baixo para PDFs pequenos
-* PDFs escaneados (imagem) podem não gerar texto utilizável
+* PDFs escaneados (imagem) podem não conter texto extraível
 
 ---
 
@@ -202,7 +239,7 @@ A LLM é instruída a:
 
 * [x] Estrutura definida
 * [x] Banco com pgvector via Docker
-* [x] Suporte a OpenAI e Gemini
-* [ ] Implementação da ingestão
+* [x] Suporte a OpenAI e Gemini via `ACTIVE_PROVIDER`
+* [x] Implementação da ingestão
 * [ ] Implementação da busca
 * [ ] Implementação do chat CLI
